@@ -6,8 +6,9 @@ app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({extended:true}));
 const Usermodal = require('./src/modals/UserModal')
 const autherModal = require('./src/modals/author')
-const bookModal = require('./src/modals/book')
-
+const bookModal = require('./src/modals/book');
+const bookingModal = require('./src/modals/booking');
+const roommodal = require('./src/modals/room');
 
 
 //database connection
@@ -41,7 +42,7 @@ const bookModal = require('./src/modals/book')
 //     })
 // })
 
-// //get all users
+// /get all users
 // app.get('/' , (req , res)=>{
   
 //     Usermodal.find().then((users)=>{
@@ -138,13 +139,60 @@ app.post('/addAuthor' ,async (req , res)=>{
 //         const author = autherModal.findOne({_id:updatedAuthor._id});
 //         res.send(author);
 
-//     }catch(err){
-//         console.log(err);
 //     }
      
 
 // })
 
+//one booking have meny rooms
+//===add ADD booking==========
+app.post('/booking',async (req,res)=>{
+    const booking = await bookingModal.create(req.body);
+    if(booking){
+        res.send(booking)
+    }else{
+        res.send("error")
+    }
+})
+
+
+
+//=======ADD ROOMS===========
+app.post('/addrooms' ,async (req , res)=>{
+try {
+    const bookingID = req.body.bookingID;
+    const roomName = req.body.roomName;
+
+    //create room
+    const createdRoom = await roommodal.create({"roomName":roomName});
+
+    //find booking and update bookingschama
+    const updatedBooking = await bookingModal.findByIdAndUpdate(bookingID,{$push:{"room":createdRoom._id}});
+    
+    const booking = bookingModal.findOne({_id:updatedBooking._id});
+    res.send(booking);
+    
+} catch (error) {
+    console.log(error)
+    res.send("Error"+error)
+}
+           
+    
+});
+
+
+
+
+//connection port
+app.get('/',(req,res)=>{
+    try {
+        res.send('Connected 4000 ')
+    } catch (error) {
+        console.log(error)
+        res.send("err")
+    }
+
+})
 
 
 //========================  Server  ================== //
