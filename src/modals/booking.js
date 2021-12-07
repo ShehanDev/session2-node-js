@@ -1,15 +1,15 @@
 const mongoose = require('mongoose')
 
 const booking = new mongoose.Schema({
-    bNo:{
+    "bno":{
         type:String,
         required:true
     },
-    Date:{
+    "date":{
         type:Date,
         default:Date.now
     },
-    room:[{
+    "room":[{
         type:mongoose.Types.ObjectId,
         ref:"room"
      }]

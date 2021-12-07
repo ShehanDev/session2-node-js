@@ -12,23 +12,30 @@ const roommodal = require('./src/modals/room');
 
 
 //database connection
- mongoose.connect('mongodb://localhost:27017/session2',()=>{
+ mongoose.connect('mongodb://localhost:27017/student',()=>{
      console.log("Database Connected")
 });
 
 
-// //POST :/create
-// app.post('/createUser' , (req , res)=>{
+//POST :/create
+app.post('/createUser' , (req , res)=>{
    
-//     Usermodal.create(req.body).then((user)=>{
-//         res.send(user)
+    Usermodal.create(req.body).then((user)=>{
+    if(!user){
+        res.send("Empty user")
+        //checking user
+    }else{
+        res.send(user)   
+    }
 
-//     }).catch((err)=>{
-//         console.log(err);
-//         res.send("error")
-//     });
+      
 
-// });
+    }).catch((err)=>{
+        console.log(err);
+        res.send("error")
+    });
+
+});
 
 // //find a user
 // app.get('/:id' , (req , res)=>{
@@ -91,7 +98,7 @@ const roommodal = require('./src/modals/room');
 //      }
 
   
-// })
+//})
 
 // app.post('/addBook' ,async(req , res)=>{
     
@@ -124,32 +131,31 @@ app.post('/addAuthor' ,async (req , res)=>{
 
 })
 
-// app.post('/addBook' ,async (req , res)=>{
+app.post('/addBook' ,async (req , res)=>{
 
-//     try{
-//         const authorId = req.body.authorId;
-//         const Bookname = req.body.Bookname;
+        const authorId = req.body.authorId;
+        const Bookname = req.body.Bookname;
     
-//         //create book
-//         const createdBook = await bookModal.create({"Bookname":Bookname});
+        //create book
+        const createdBook = await bookModal.create({"Bookname":Bookname});
     
-//         //find autor and update schama
-//         const updatedAuthor = await autherModal.findByIdAndUpdate(authorId,{$push:{"books":createdBook._id}});
+        //find autor and update schama
+        const updatedAuthor = await autherModal.findByIdAndUpdate(authorId,{$push:{"books":createdBook._id}});
         
-//         const author = autherModal.findOne({_id:updatedAuthor._id});
-//         res.send(author);
+        const author = autherModal.findOne({_id:updatedAuthor._id});
+        res.send(author);
 
-//     }
+   
      
 
-// })
+})
 
 //one booking have meny rooms
 //===add ADD booking==========
-app.post('/booking',async (req,res)=>{
-    const booking = await bookingModal.create(req.body);
-    if(booking){
-        res.send(booking)
+app.post('/room',async (req,res)=>{
+    const room = await roommodal.create(req.body);
+    if(room){
+        res.send(room)
     }else{
         res.send("error")
     }
@@ -157,17 +163,17 @@ app.post('/booking',async (req,res)=>{
 
 
 
-//=======ADD ROOMS===========
-app.post('/addrooms' ,async (req , res)=>{
+//=======ADD Rbooking===========
+app.post('/booking' ,async (req , res)=>{
 try {
-    const bookingID = req.body.bookingID;
-    const roomName = req.body.roomName;
+    const  bookedID = req.body.bookedID;
+    const roomNo = req.body.roomNo;
+    
+    //create new booking
+    const booked = await book.create({"roomNo":roomNo});
 
-    //create room
-    const createdRoom = await roommodal.create({"roomName":roomName});
-
-    //find booking and update bookingschama
-    const updatedBooking = await bookingModal.findByIdAndUpdate(bookingID,{$push:{"room":createdRoom._id}});
+    //find room and update bookingschama
+    const updatedBooking = await bookingModal.findByIdAndUpdate(bookedID ,{$push:{"room":createdRoom._id}});
     
     const booking = bookingModal.findOne({_id:updatedBooking._id});
     res.send(booking);
@@ -175,8 +181,7 @@ try {
 } catch (error) {
     console.log(error)
     res.send("Error"+error)
-}
-           
+}        
     
 });
 
